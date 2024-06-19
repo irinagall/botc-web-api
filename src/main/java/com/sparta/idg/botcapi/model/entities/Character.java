@@ -67,7 +67,7 @@ public class Character {
         return "Character{" +
                 "name='" + name + '\'' +
                 ", ability='" + ability + '\'' +
-               // ", script=" + script +
+                ", script=" + script.getTitle() +
                 //", characterInfos=" + characterInfoAdvice +
                 '}';
     }
