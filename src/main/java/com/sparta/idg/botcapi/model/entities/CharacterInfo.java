@@ -1,5 +1,6 @@
 package com.sparta.idg.botcapi.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -13,6 +14,7 @@ public class CharacterInfo {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "character_id", referencedColumnName = "name")
+    @JsonBackReference
     private Character character;
 
     @NotNull
@@ -44,4 +46,12 @@ public class CharacterInfo {
         this.info = info;
     }
 
+    @Override
+    public String toString() {
+        return "CharacterInfo{" +
+                "id=" + id +
+               // ", character=" + character +
+                ", info='" + info + '\'' +
+                '}';
+    }
 }

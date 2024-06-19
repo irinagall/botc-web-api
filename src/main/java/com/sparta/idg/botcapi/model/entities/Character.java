@@ -1,5 +1,6 @@
 package com.sparta.idg.botcapi.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -22,10 +23,12 @@ public class Character {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "script_id")
+    @JsonBackReference
     private Script script;
 
     @OneToMany(mappedBy = "character")
-    private Set<CharacterInfo> characterInfos = new LinkedHashSet<>();
+    private Set<CharacterInfo> characterInfoAdvice = new LinkedHashSet<>();
+
 
     public String getName() {
         return name;
@@ -51,12 +54,21 @@ public class Character {
         this.script = script;
     }
 
-    public Set<CharacterInfo> getCharacterInfos() {
-        return characterInfos;
+    public Set<CharacterInfo> getCharacterInfoAdvice() {
+        return characterInfoAdvice;
     }
 
-    public void setCharacterInfos(Set<CharacterInfo> characterInfos) {
-        this.characterInfos = characterInfos;
+    public void setCharacterInfoAdvice(Set<CharacterInfo> characterInformationAdvice) {
+        this.characterInfoAdvice = characterInformationAdvice;
     }
 
+    @Override
+    public String toString() {
+        return "Character{" +
+                "name='" + name + '\'' +
+                ", ability='" + ability + '\'' +
+               // ", script=" + script +
+                //", characterInfos=" + characterInfoAdvice +
+                '}';
+    }
 }

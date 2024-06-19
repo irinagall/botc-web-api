@@ -44,4 +44,12 @@ public class Script {
         this.characters = characters;
     }
 
+    @Override
+    public String toString() {
+        return "Script{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", characters=" + characters +
+                '}';
+    }
 }
