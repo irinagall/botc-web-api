@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CharacterInfoRepository extends JpaRepository<CharacterInfo, Integer> {
+    CharacterInfo findCharacterInfoById(Integer id);
 }
