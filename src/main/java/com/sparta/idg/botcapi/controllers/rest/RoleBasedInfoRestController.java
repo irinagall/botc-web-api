@@ -3,6 +3,7 @@ package com.sparta.idg.botcapi.controllers.rest;
 
 import com.sparta.idg.botcapi.model.entities.RoleBasedInfo;
 import com.sparta.idg.botcapi.model.repositories.RoleBasedInfoRepository;
+import com.sparta.idg.botcapi.service.RoleBasedInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +15,12 @@ import java.util.Optional;
 @RestController
 public class RoleBasedInfoRestController {
     private RoleBasedInfoRepository roleBasedInfoRepository;
+    private RoleBasedInfoService roleBasedInfoService;
 
     @Autowired
-    public RoleBasedInfoRestController(RoleBasedInfoRepository roleBasedInfoRepository){
+    public RoleBasedInfoRestController(RoleBasedInfoRepository roleBasedInfoRepository, RoleBasedInfoService roleBasedInfoService){
         this.roleBasedInfoRepository = roleBasedInfoRepository;
+        this.roleBasedInfoService = roleBasedInfoService;
     }
 
     @GetMapping("/roleBasedInfo")
@@ -56,4 +59,11 @@ public class RoleBasedInfoRestController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/roleBasedInfo/character/{name}")
+    public ResponseEntity<List<RoleBasedInfo>> getRoleBasedInfoByCharacterName(@PathVariable String name) {
+        List<RoleBasedInfo> roleBasedInfoList = roleBasedInfoService.getRoleBasedInfoByCharacterName(name);
+        return ResponseEntity.ok(roleBasedInfoList);
+    }
+
 }
