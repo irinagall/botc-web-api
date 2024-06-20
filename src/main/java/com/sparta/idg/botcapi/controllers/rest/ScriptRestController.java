@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequestMapping("/rest")
 @RestController
 public class ScriptRestController {
     private final ScriptRepository scriptRepository;
@@ -16,28 +17,28 @@ public class ScriptRestController {
         this.scriptRepository = scriptRepository;
     }
 
-    @GetMapping("/rest/scripts")
+    @GetMapping("/scripts")
     public List<Script> getAllScripts() {
        return scriptRepository.findAll();
     }
 
-    @GetMapping("/rest/script/id{id}")
+    @GetMapping("/script/id{id}")
     public Script getScriptById(@PathVariable Integer id){
         return scriptRepository.findScriptById(id);
     }
 
-    @GetMapping("/rest/script/title")
+    @GetMapping("/script/title")
     public List<Script> getScriptByTitle(@RequestParam(name = "title", required = false) String title){
        return scriptRepository.findAll().stream().filter(script -> script.getTitle().contains(title)).toList();
     }
 
-    @PostMapping("/rest/script/new")
+    @PostMapping("/script/new")
     public String addScript(@RequestBody Script script){
        scriptRepository.save(script);
        return  "New script added: " + script.getTitle();
     }
 
-    @DeleteMapping("/rest/script/delete/id{id}")
+    @DeleteMapping("/script/delete/id{id}")
     public String deleteScriptById(@PathVariable Integer id){
        if(scriptRepository.existsById(id)){
            scriptRepository.deleteById(id);
@@ -47,7 +48,7 @@ public class ScriptRestController {
        }
     }
 
-    @PutMapping("/rest/script/update/id{id}")
+    @PutMapping("/script/update/id{id}")
     public Script updateScriptById(@PathVariable Integer id, @RequestBody Script script){
        //Get the script that needs to be updated
         Script scriptToUpdate = scriptRepository.findById(id).get();

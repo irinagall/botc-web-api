@@ -1,10 +1,10 @@
 package com.sparta.idg.botcapi.model.repositories;
 
-import com.sparta.idg.botcapi.model.entities.CharacterInfo;
+import com.sparta.idg.botcapi.model.entities.RoleBasedInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CharacterInfoRepository extends JpaRepository<CharacterInfo, Integer> {
-    CharacterInfo findCharacterInfoById(Integer id);
+public interface CharacterInfoRepository extends JpaRepository<RoleBasedInfo, Integer> {
+    RoleBasedInfo findCharacterInfoById(Integer id);
 }

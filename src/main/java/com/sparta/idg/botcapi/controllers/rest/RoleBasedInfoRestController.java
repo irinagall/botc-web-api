@@ -1,7 +1,7 @@
 package com.sparta.idg.botcapi.controllers.rest;
 
 
-import com.sparta.idg.botcapi.model.entities.CharacterInfo;
+import com.sparta.idg.botcapi.model.entities.RoleBasedInfo;
 import com.sparta.idg.botcapi.model.repositories.CharacterInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,24 +12,24 @@ import java.util.Optional;
 
 @RequestMapping("/rest")
 @RestController
-public class CharacterInfoRestController {
+public class RoleBasedInfoRestController {
     private CharacterInfoRepository characterInfoRepository;
 
     @Autowired
-    public CharacterInfoRestController(CharacterInfoRepository characterInfoRepository){
+    public RoleBasedInfoRestController(CharacterInfoRepository characterInfoRepository){
         this.characterInfoRepository = characterInfoRepository;
     }
 
     @GetMapping("/roleBasedInfo")
-    public List<CharacterInfo> getAllInfo(){return characterInfoRepository.findAll();}
+    public List<RoleBasedInfo> getAllInfo(){return characterInfoRepository.findAll();}
 
     @GetMapping("roleBasedInfo/id{id}")
-    public  CharacterInfo getRoleBasedInfoByInfoPieceId(@PathVariable Integer id){
+    public RoleBasedInfo getRoleBasedInfoByInfoPieceId(@PathVariable Integer id){
         return  characterInfoRepository.findCharacterInfoById(id);
     }
 
     @PostMapping("roleBasedInfo/new")
-    public  String addRoleBasedInfo(@RequestBody CharacterInfo characterInfo){
+    public  String addRoleBasedInfo(@RequestBody RoleBasedInfo characterInfo){
         characterInfoRepository.save(characterInfo);
         return "New role related info added: " + characterInfo.getInfo();
     }
@@ -45,12 +45,12 @@ public class CharacterInfoRestController {
     }
 
     @PutMapping("roleBasedInfo/update/id{id}")
-    public ResponseEntity<CharacterInfo> updateRoleBasedInfoByInfoPieceId(@PathVariable Integer id, @RequestBody CharacterInfo characterInfo) {
-        Optional<CharacterInfo> optionalCharacterInfo = characterInfoRepository.findById(id);
+    public ResponseEntity<RoleBasedInfo> updateRoleBasedInfoByInfoPieceId(@PathVariable Integer id, @RequestBody RoleBasedInfo characterInfo) {
+        Optional<RoleBasedInfo> optionalCharacterInfo = characterInfoRepository.findById(id);
         if (optionalCharacterInfo.isPresent()) {
-            CharacterInfo characterInfoToUpdate = optionalCharacterInfo.get();
+            RoleBasedInfo characterInfoToUpdate = optionalCharacterInfo.get();
             characterInfoToUpdate.setInfo(characterInfo.getInfo());
-            CharacterInfo updatedCharacterInfo = characterInfoRepository.save(characterInfoToUpdate);
+            RoleBasedInfo updatedCharacterInfo = characterInfoRepository.save(characterInfoToUpdate);
             return ResponseEntity.ok(updatedCharacterInfo);
         } else {
             return ResponseEntity.notFound().build();
