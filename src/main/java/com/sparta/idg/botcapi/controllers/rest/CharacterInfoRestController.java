@@ -4,9 +4,11 @@ package com.sparta.idg.botcapi.controllers.rest;
 import com.sparta.idg.botcapi.model.entities.CharacterInfo;
 import com.sparta.idg.botcapi.model.repositories.CharacterInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequestMapping("/rest")
 @RestController
@@ -42,13 +44,16 @@ public class CharacterInfoRestController {
         }
     }
 
-    //
     @PutMapping("roleBasedInfo/update/id{id}")
-    public CharacterInfo updateRoleBasedInfoByInfoPieceId(@PathVariable Integer id, @RequestBody CharacterInfo characterInfo) {
-        CharacterInfo characterInfoToUpdate = characterInfoRepository.findById(id).get();
-
-        characterInfoToUpdate.setInfo(characterInfo.getInfo());
-
-        return characterInfoRepository.save(characterInfoToUpdate);
+    public ResponseEntity<CharacterInfo> updateRoleBasedInfoByInfoPieceId(@PathVariable Integer id, @RequestBody CharacterInfo characterInfo) {
+        Optional<CharacterInfo> optionalCharacterInfo = characterInfoRepository.findById(id);
+        if (optionalCharacterInfo.isPresent()) {
+            CharacterInfo characterInfoToUpdate = optionalCharacterInfo.get();
+            characterInfoToUpdate.setInfo(characterInfo.getInfo());
+            CharacterInfo updatedCharacterInfo = characterInfoRepository.save(characterInfoToUpdate);
+            return ResponseEntity.ok(updatedCharacterInfo);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
