@@ -4,6 +4,7 @@ import com.sparta.idg.botcapi.model.entities.Script;
 import com.sparta.idg.botcapi.model.repositories.ScriptRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import org.springframework.http.HttpStatus;
@@ -65,17 +66,17 @@ public class ScriptRestController {
     //Hypermedia As The Engine Of State
     @GetMapping("/script/{id}")
     public EntityModel<Script> getScriptByIdWithHateos(@PathVariable Integer id) {
-        return scriptRepository.findById(id).map(script -> {
-            EntityModel<Script> entityModel = EntityModel.of(script);
+        return scriptRepository.findById(id).map(mappedScript -> {
+            EntityModel<Script> entityModel = EntityModel.of(mappedScript);
             entityModel.add(linkTo(methodOn(ScriptRestController.class).
                     getScriptById(id)).withSelfRel());
             entityModel.add(linkTo(methodOn(ScriptRestController.class).getAllScripts()).withRel("all scripts"));
 
-            for (int i = 1; i <= 5; i++) {
-                if (i != id) {
-                    entityModel.add(linkTo(methodOn(ScriptRestController.class).getScriptById(i)).withRel("script: " + i));
-                }
-            }
+            List<Script> allScripts = scriptRepository.findAll();
+
+            allScripts.stream().filter(script -> !script.getId().equals(id))
+                    .forEach(script -> entityModel.add(linkTo(methodOn(ScriptRestController.class).getScriptByIdWithHateos(script.getId())).withRel("script " + script.getId())));
+
 
             return entityModel;
         }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Script not found"));
