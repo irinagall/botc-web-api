@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "character_info", schema = "StoryTeller")
-public class CharacterInfo {
+public class RoleBasedInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

@@ -2,9 +2,7 @@ package com.sparta.idg.botcapi.model.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -27,7 +25,7 @@ public class Character {
     private Script script;
 
     @OneToMany(mappedBy = "character")
-    private Set<CharacterInfo> characterInfoAdvice = new LinkedHashSet<>();
+    private Set<RoleBasedInfo> characterInfoAdvice = new LinkedHashSet<>();
 
 
     public String getName() {
@@ -54,11 +52,11 @@ public class Character {
         this.script = script;
     }
 
-    public Set<CharacterInfo> getCharacterInfoAdvice() {
+    public Set<RoleBasedInfo> getCharacterInfoAdvice() {
         return characterInfoAdvice;
     }
 
-    public void setCharacterInfoAdvice(Set<CharacterInfo> characterInformationAdvice) {
+    public void setCharacterInfoAdvice(Set<RoleBasedInfo> characterInformationAdvice) {
         this.characterInfoAdvice = characterInformationAdvice;
     }
 
