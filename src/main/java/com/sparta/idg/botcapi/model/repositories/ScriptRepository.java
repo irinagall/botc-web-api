@@ -10,4 +10,5 @@ import java.util.Optional;
 @Repository
 public interface ScriptRepository extends JpaRepository<Script, Integer> {
     Script findScriptById(Integer scriptId);
+
 }
