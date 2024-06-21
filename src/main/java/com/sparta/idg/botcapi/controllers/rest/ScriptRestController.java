@@ -3,6 +3,8 @@ package com.sparta.idg.botcapi.controllers.rest;
 import com.sparta.idg.botcapi.model.entities.Script;
 import com.sparta.idg.botcapi.model.repositories.ScriptRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -57,5 +59,14 @@ public class ScriptRestController {
         //Save it to the database
         return scriptRepository.save(scriptToUpdate);
     }
+
+    //Hypermedia As The Engine Of State
+    @GetMapping("/script/{id}")
+    public EntityModel<Script> findScriptById(@PathVariable Integer id){
+       return scriptRepository.findById(id).map(script -> EntityModel.of(script,linkTo(methodOn(ScriptRestController.class).getScriptById(id)).withSelfRel(),
+              // linkTo(methodOn(ScriptRestController.class).getScriptById()) want to provide link to script id : 1
+                       linkTo(methodOn(ScriptRestController.class).getAllScripts()).withRel("all scripts"))).orElseThrow();
+    }
+
 
 }
