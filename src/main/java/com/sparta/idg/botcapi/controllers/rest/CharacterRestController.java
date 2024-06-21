@@ -3,21 +3,24 @@ package com.sparta.idg.botcapi.controllers.rest;
 import com.sparta.idg.botcapi.model.entities.Character;
 import com.sparta.idg.botcapi.model.repositories.CharacterRepository;
 import com.sparta.idg.botcapi.model.repositories.ScriptRepository;
+import com.sparta.idg.botcapi.service.CharacterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("/rest")
+//@RequestMapping("/rest")
 @RestController
 public class CharacterRestController {
     private final ScriptRepository scriptRepository;
     private CharacterRepository characterRepository ;
+    private CharacterService characterService;
 
     @Autowired
-    public CharacterRestController(CharacterRepository characterRepository, ScriptRepository scriptRepository){
+    public CharacterRestController(CharacterRepository characterRepository, ScriptRepository scriptRepository, CharacterService characterService){
         this.characterRepository = characterRepository;
         this.scriptRepository = scriptRepository;
+        this.characterService = characterService;
     }
 
     @GetMapping("/characters")
@@ -28,13 +31,18 @@ public class CharacterRestController {
         return characterRepository.findAll().stream().filter(character -> character.getName().contains(name)).toList();
     }
 
-    @PostMapping("/character/new")
+    @GetMapping("/characters/{id}")
+    public Character getCharacterById(@PathVariable String id){
+        return characterRepository.findCharacterByName(id);
+    }
+
+    @PostMapping("/characters")
     public String addCharacter(@RequestBody Character character){
         characterRepository.save(character);
         return " New character added: " + character.getName();
     }
 
-    @DeleteMapping("character/delete/name{name}")
+    @DeleteMapping("characters/{name}")
     public String deleteCharacterByName(@PathVariable String name){
         if(characterRepository.existsById(name)){
             characterRepository.deleteById(name);
@@ -44,7 +52,7 @@ public class CharacterRestController {
         }
     }
 
-    @PutMapping("character/update/name{name}")
+    @PutMapping("characters/{name}")
     public Character updateCharacterAbilityByName(@PathVariable String name, @RequestBody Character character){
         //Get the character that needs to be updated
         Character characterToUpdate = characterRepository.findById(name).get();

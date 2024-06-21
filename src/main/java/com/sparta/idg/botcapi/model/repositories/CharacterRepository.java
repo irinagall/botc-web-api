@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CharacterRepository extends JpaRepository<Character, String> {
+    Character findCharacterByName(String name);
 }

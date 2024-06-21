@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-@RequestMapping("/rest")
 @RestController
 public class RoleBasedInfoRestController {
     private RoleBasedInfoRepository roleBasedInfoRepository;
@@ -26,18 +25,18 @@ public class RoleBasedInfoRestController {
     @GetMapping("/roleBasedInfo")
     public List<RoleBasedInfo> getAllInfo(){return roleBasedInfoRepository.findAll();}
 
-    @GetMapping("roleBasedInfo/id{id}")
+    @GetMapping("roleBasedInfo/{id}")
     public RoleBasedInfo getRoleBasedInfoByInfoPieceId(@PathVariable Integer id){
         return  roleBasedInfoRepository.findCharacterInfoById(id);
     }
 
-    @PostMapping("roleBasedInfo/new")
+    @PostMapping("roleBasedInfo")
     public  String addRoleBasedInfo(@RequestBody RoleBasedInfo characterInfo){
         roleBasedInfoRepository.save(characterInfo);
         return "New role related info added: " + characterInfo.getInfo();
     }
 
-    @DeleteMapping("roleBasedInfo/delete/id{id}")
+    @DeleteMapping("roleBasedInfo/{id}")
     public String deleteRoleBasedInfoByInfoPieceId(@PathVariable Integer id){
         if(roleBasedInfoRepository.existsById(id)){
             roleBasedInfoRepository.deleteById(id);
@@ -47,7 +46,7 @@ public class RoleBasedInfoRestController {
         }
     }
 
-    @PutMapping("roleBasedInfo/update/id{id}")
+    @PutMapping("roleBasedInfo/{id}")
     public ResponseEntity<RoleBasedInfo> updateRoleBasedInfoByInfoPieceId(@PathVariable Integer id, @RequestBody RoleBasedInfo characterInfo) {
         Optional<RoleBasedInfo> optionalCharacterInfo = roleBasedInfoRepository.findById(id);
         if (optionalCharacterInfo.isPresent()) {
