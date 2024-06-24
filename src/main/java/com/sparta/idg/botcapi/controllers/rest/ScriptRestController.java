@@ -41,11 +41,6 @@ public class ScriptRestController {
         return scriptRepository.findScriptById(id);
     }
 
-   /* @GetMapping("/script/title")
-    public List<Script> getScriptByTitle(@RequestParam(name = "title", required = false) String title) {
-        return scriptRepository.findAll().stream().filter(script -> script.getTitle().contains(title)).toList();
-    }*/
-
     @GetMapping("/script/title")
     public CollectionModel<EntityModel<Script>> getScriptByTitle(@RequestParam(name = "title", required = false) String title) {
         List<Script> scripts = scriptRepository.findAll().stream()
