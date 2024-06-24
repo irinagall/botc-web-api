@@ -5,61 +5,112 @@ import com.sparta.idg.botcapi.model.repositories.CharacterRepository;
 import com.sparta.idg.botcapi.model.repositories.ScriptRepository;
 import com.sparta.idg.botcapi.service.CharacterService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-//@RequestMapping("/rest")
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @RestController
 public class CharacterRestController {
     private final ScriptRepository scriptRepository;
-    private CharacterRepository characterRepository ;
+    private CharacterRepository characterRepository;
     private CharacterService characterService;
 
     @Autowired
-    public CharacterRestController(CharacterRepository characterRepository, ScriptRepository scriptRepository, CharacterService characterService){
+    public CharacterRestController(CharacterRepository characterRepository, ScriptRepository scriptRepository, CharacterService characterService) {
         this.characterRepository = characterRepository;
         this.scriptRepository = scriptRepository;
         this.characterService = characterService;
     }
 
     @GetMapping("/characters")
-    public List<Character> getAllCharacters(){return characterRepository.findAll();}
+    public List<Character> getAllCharacters() {
+        return characterRepository.findAll();
+    }
 
     @GetMapping("/character/name")
-    public List<Character> getCharacterByName(@RequestParam(name="name", required = false) String name){
-        return characterRepository.findAll().stream().filter(character -> character.getName().contains(name)).toList();
+    public CollectionModel<EntityModel<Character>> getCharacterByName(@RequestParam(name = "name", required = false) String name) {
+        List<EntityModel<Character>> characterModels = characterRepository.findAll().stream()
+                .filter(character -> character.getName().contains(name))
+                .map(character -> EntityModel.of(character,
+                        linkTo(methodOn(CharacterRestController.class).getCharacterByName(name)).withSelfRel(),
+                        linkTo(methodOn(CharacterRestController.class).getAllCharacters()).withRel("allCharacters")))
+                .collect(Collectors.toList());
+
+        return CollectionModel.of(characterModels);
+
     }
 
     @GetMapping("/characters/{id}")
-    public Character getCharacterById(@PathVariable String id){
-        return characterRepository.findCharacterByName(id);
+    public ResponseEntity<EntityModel<Character>> getCharacterById(@PathVariable String id) {
+        Character character = characterRepository.findCharacterByName(id);
+        if (character == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        EntityModel<Character> characterModel = EntityModel.of(character,
+                linkTo(methodOn(CharacterRestController.class).getCharacterById(id)).withSelfRel(),
+                linkTo(methodOn(CharacterRestController.class).getAllCharacters()).withRel("allCharacters"));
+
+        return ResponseEntity.ok(characterModel);
     }
 
     @PostMapping("/characters")
-    public String addCharacter(@RequestBody Character character){
+    public ResponseEntity<EntityModel<Character>> addCharacter(@RequestBody Character character) {
         characterRepository.save(character);
-        return " New character added: " + character.getName();
+
+        EntityModel<Character> characterModel = EntityModel.of(character,
+                linkTo(methodOn(CharacterRestController.class).getAllCharacters()).withRel("allCharacters"));
+
+        return ResponseEntity.created(linkTo(methodOn(CharacterRestController.class).getCharacterById(character.getName())).toUri())
+                .body(characterModel);
     }
 
     @DeleteMapping("characters/{name}")
-    public String deleteCharacterByName(@PathVariable String name){
-        if(characterRepository.existsById(name)){
+    public ResponseEntity<?> deleteCharacterByName(@PathVariable String name) {
+        Map<String, Object> response = new HashMap<>();
+        Link allCharactersLink = linkTo(methodOn(this.getClass()).getAllCharacters()).withRel("allCharacters");
+
+        if (characterRepository.existsById(name)) {
             characterRepository.deleteById(name);
-            return "You have deleted the character with name identifier: " + name;
-        }else{
-            return "Couldn't find character with name identifier " + name + " therefore, it could not be deleted.";
+            response.put("message", "You have deleted the character with name identifier: " + name);
+            return ResponseEntity.ok(EntityModel.of(response, allCharactersLink));
+        } else {
+            response.put("message", "Couldn't find character with name identifier " + name + " therefore, it could not be deleted.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(EntityModel.of(response, allCharactersLink));
         }
     }
 
     @PutMapping("characters/{name}")
-    public Character updateCharacterAbilityByName(@PathVariable String name, @RequestBody Character character){
-        //Get the character that needs to be updated
-        Character characterToUpdate = characterRepository.findById(name).get();
-        //Update the character object with the changes
+    public ResponseEntity<EntityModel<Character>> updateCharacterAbilityByName(@PathVariable String name, @RequestBody Character character) {
+        // Get the character that needs to be updated
+        Character characterToUpdate = characterRepository.findById(name)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Character not found"));
+
+        // Update the character object with the changes
         characterToUpdate.setAbility(character.getAbility());
-        //Save it to the Database
-        return characterRepository.save(characterToUpdate);
+
+        // Save it to the Database
+        Character updatedCharacter = characterRepository.save(characterToUpdate);
+
+        // Create an EntityModel with HATEOAS links
+        EntityModel<Character> characterModel = EntityModel.of(updatedCharacter,
+                linkTo(methodOn(this.getClass()).updateCharacterAbilityByName(name, character)).withSelfRel(),
+                linkTo(methodOn(this.getClass()).getAllCharacters()).withRel("allCharacters")
+        );
+
+        return ResponseEntity.ok(characterModel);
     }
 
 }

@@ -97,7 +97,7 @@ public class RoleBasedInfoRestController {
             return ResponseEntity.notFound().build();
         }
     }
-    
+
   @GetMapping("/roleBasedInfo/character/{name}")
   public ResponseEntity<CollectionModel<EntityModel<RoleBasedInfo>>> getRoleBasedInfoByCharacterName(@PathVariable String name) {
       List<RoleBasedInfo> roleBasedInfoList = roleBasedInfoService.getRoleBasedInfoByCharacterName(name);
